@@ -19,11 +19,11 @@ const ReportFound = () => {
   const handleUpload = async () => {
     const data = new FormData();
     data.append("file", image);
-    data.append("upload_preset", "your_preset_name"); // The preset you just created
-    data.append("cloud_name", "your_cloud_name"); // Found in Cloudinary Dashboard
+    data.append("upload_preset", "campus_retrieve_preset"); // The preset you just created
+    data.append("cloud_name", "dtuocgtis"); // Found in Cloudinary Dashboard
 
     const res = await axios.post(
-      "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
+      "https://api.cloudinary.com/v1_1/dtuocgtis/image/upload",
       data,
     );
     return res.data.secure_url;

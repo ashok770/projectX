@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { MapPin, Calendar, ShieldCheck } from "lucide-react";
+import VerifyModal from "./VerifyModal";
 
 const ItemCard = ({ item }) => {
   const isFound = item.type === "found";
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition">
@@ -37,10 +40,11 @@ const ItemCard = ({ item }) => {
           <span>{new Date(item.createdAt).toLocaleDateString()}</span>
         </div>
 
-        <button className="w-full mt-4 py-2 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">
+        <button onClick={() => setShowModal(true)} className="w-full mt-4 py-2 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">
           View Details
         </button>
       </div>
+      {showModal && <VerifyModal item={item} onClose={() => setShowModal(false)} />}
     </div>
   );
 };

@@ -107,19 +107,35 @@ const ReportFound = () => {
           />
         </div>
 
-        <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
-          <label className="block text-sm font-bold text-orange-800 mb-1">
-            Secret Question (For Verification)
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. What is the wallpaper on the phone?"
-            className="w-full p-2 border border-orange-200 rounded"
-            onChange={(e) =>
-              setFormData({ ...formData, secretQuestion: e.target.value })
-            }
-            required
-          />
+        <div className="bg-orange-50 p-4 rounded-lg border border-orange-100 space-y-3">
+          <div>
+            <label className="block text-sm font-bold text-orange-800 mb-1">
+              Secret Question
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. What is the wallpaper?"
+              className="w-full p-2 border border-orange-200 rounded"
+              onChange={(e) =>
+                setFormData({ ...formData, secretQuestion: e.target.value })
+              }
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-orange-800 mb-1">
+              Correct Answer
+            </label>
+            <input
+              type="text"
+              placeholder="The answer only the owner knows..."
+              className="w-full p-2 border border-orange-200 rounded"
+              onChange={(e) =>
+                setFormData({ ...formData, secretAnswer: e.target.value })
+              }
+              required
+            />
+          </div>
         </div>
 
         <button

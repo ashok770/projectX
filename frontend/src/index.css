@@ -1,11 +1,11 @@
-@import "tailwindcss";
+  @import "tailwindcss";
 
-@theme {
-  --color-brand: #f97316; /* Our Orange */
-  --color-dark: #1e293b; /* Our Deep Blue/Slate */
-  --font-sans: "Inter", ui-sans-serif, system-ui;
-}
+  @theme {
+    --color-brand: #f97316; /* Our Orange */
+    --color-dark: #1e293b; /* Our Deep Blue/Slate */
+    --font-sans: "Inter", ui-sans-serif, system-ui;
+  }
 
-body {
-  @apply bg-slate-50 text-slate-900;
-}
+  body {
+    @apply bg-slate-50 text-slate-900;
+  }

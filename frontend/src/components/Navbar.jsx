@@ -19,11 +19,11 @@ const Navbar = () => {
       <div className="flex items-center gap-6">
         {user ? (
           <>
-            <div className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full">
+            <Link to="/dashboard" className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full">
               <span className="text-xs font-bold text-green-600">
                 Trust: {user.trustScore}
               </span>
-            </div>
+            </Link>
             <button
               onClick={logout}
               className="text-sm font-semibold text-red-500"

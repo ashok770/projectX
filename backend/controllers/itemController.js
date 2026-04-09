@@ -71,3 +71,55 @@ exports.verifyClaim = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getSmartMatches = async (req, res) => {
+  try {
+    // 1. Get all "Lost" items reported by the current user
+    const myLostItems = await Item.find({
+      reportedBy: req.user.id,
+      type: "lost",
+      status: "active",
+    });
+
+    let allSuggestions = [];
+
+    for (let lostItem of myLostItems) {
+      // 2. Find "Found" items in the same category
+      const potentialFoundItems = await Item.find({
+        type: "found",
+        category: lostItem.category,
+        status: "active",
+      });
+
+      // 3. Score them
+      const scored = potentialFoundItems.map((found) => {
+        let score = 0;
+        if (found.location.toLowerCase() === lostItem.location.toLowerCase())
+          score += 40;
+        if (
+          found.itemName.toLowerCase().includes(lostItem.itemName.toLowerCase())
+        )
+          score += 60;
+
+        return { ...found._doc, matchScore: score };
+      });
+
+      // 4. Only keep items with a score > 40%
+      allSuggestions.push(...scored.filter((s) => s.matchScore > 40));
+    }
+
+    res.json(allSuggestions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+exports.getUserItems = async (req, res) => {
+  try {
+    // req.user.id comes from our Auth Middleware
+    const items = await Item.find({ reportedBy: req.user.id }).sort({
+      createdAt: -1,
+    });
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

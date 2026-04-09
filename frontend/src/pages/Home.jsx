@@ -5,6 +5,7 @@ import ItemCard from "../components/ItemCard";
 const Home = () => {
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [matches, setMatches] = useState([]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -12,6 +13,20 @@ const Home = () => {
       setItems(res.data);
     };
     fetchItems();
+  }, []);
+
+  useEffect(() => {
+    const fetchMatches = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const res = await axios.get(
+          "http://localhost:5000/api/items/smart-matches",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setMatches(res.data);
+      }
+    };
+    fetchMatches();
   }, []);
 
   const filteredItems =
@@ -39,6 +54,19 @@ const Home = () => {
           ))}
         </div>
       </div>
+
+      {matches.length > 0 && (
+        <div className="mb-12 p-6 bg-orange-50 rounded-2xl border border-orange-200">
+          <h2 className="text-xl font-bold text-orange-800 flex items-center gap-2">
+            <span>✨ Smart Matches for You</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {matches.map((item) => (
+              <ItemCard key={item._id} item={item} isMatch={true} />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredItems.map((item) => (

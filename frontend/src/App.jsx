@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ReportFound from "./pages/ReportFound";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/report-found" element={<ReportFound />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </div>
   );

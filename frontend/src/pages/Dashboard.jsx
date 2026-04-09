@@ -18,6 +18,21 @@ const Dashboard = () => {
     fetchMyItems();
   }, []);
 
+  const handleDelete = async (itemId) => {
+    if (window.confirm("Are you sure you want to remove this report?")) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(`http://localhost:5000/api/items/${itemId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMyItems(myItems.filter((item) => item._id !== itemId));
+        alert("Item deleted successfully!");
+      } catch (err) {
+        alert("Failed to delete item.");
+      }
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
       {/* Profile Header */}
@@ -72,7 +87,10 @@ const Dashboard = () => {
                 )}
                 {item.status.toUpperCase()}
               </span>
-              <button className="text-red-500 text-sm font-semibold hover:underline">
+              <button
+                onClick={() => handleDelete(item._id)}
+                className="text-red-500 text-sm font-semibold hover:underline"
+              >
                 Delete
               </button>
             </div>

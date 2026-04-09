@@ -7,6 +7,7 @@ const {
   getSmartMatches,
   getUserItems,
   getMatchesForUser,
+  deleteItem,
 } = require("../controllers/itemController");
 const auth = require("../middleware/auth");
 
@@ -16,4 +17,5 @@ router.post("/verify-claim", auth, verifyClaim);
 router.get("/smart-matches", auth, getSmartMatches);
 router.get("/my-items", auth, getUserItems);
 router.get("/matches", auth, getMatchesForUser);
+router.delete("/:id", auth, deleteItem);
 module.exports = router;

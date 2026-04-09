@@ -147,3 +147,40 @@ exports.getMatchesForUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.deleteItem = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Security Check: Does this item belong to the person trying to delete it?
+    if (item.reportedBy.toString() !== req.user.id) {
+      return res
+        .status(401)
+        .json({ message: "User not authorized to delete this" });
+    }
+
+    await item.deleteOne();
+    res.json({ message: "Item removed successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteItem = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+
+    // Only the person who reported it can delete it
+    if (item.reportedBy.toString() !== req.user.id)
+      return res.status(403).json({ message: "Not authorized" });
+
+    await item.deleteOne();
+    res.json({ message: "Item deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

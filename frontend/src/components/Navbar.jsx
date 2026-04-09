@@ -1,40 +1,75 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, PlusCircle, LayoutDashboard, LogOut } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
-    <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm border-b border-slate-100">
+    <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm border-b border-slate-100 sticky top-0 z-50">
+      {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
-        <div className="bg-brand p-2 rounded-lg w-8 h-8 flex items-center justify-center text-white font-bold">
-          C
-        </div>
-        <h1 className="text-xl font-bold text-dark tracking-tight">
+        <div className="bg-brand p-2 rounded-lg text-white font-bold">C</div>
+        <h1 className="text-xl font-bold text-dark tracking-tight hidden md:block">
           Campus<span className="text-brand">Retrieve</span>
         </h1>
       </Link>
 
-      <div className="flex items-center gap-6">
+      {/* Actions */}
+      <div className="flex items-center gap-4 md:gap-8">
         {user ? (
           <>
-            <Link to="/dashboard" className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full">
-              <span className="text-xs font-bold text-green-600">
-                Trust: {user.trustScore}
-              </span>
-            </Link>
-            <button
-              onClick={logout}
-              className="text-sm font-semibold text-red-500"
+            <Link
+              to="/report-found"
+              className="flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-brand transition"
             >
-              Logout
-            </button>
+              <PlusCircle size={18} />
+              <span className="hidden sm:inline">Report Found</span>
+            </Link>
+
+            <Link
+              to="/report-lost"
+              className="flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-blue-500 transition"
+            >
+              <Search size={18} />
+              <span className="hidden sm:inline">Report Lost</span>
+            </Link>
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-brand transition"
+            >
+              <LayoutDashboard size={18} />
+              <span className="hidden sm:inline">My Dashboard</span>
+            </Link>
+            <div className="h-8 w-px bg-slate-200 mx-2"></div>
+            <div className="flex items-center gap-3">
+              <div className="text-right hidden sm:block">
+                <p className="text-[10px] uppercase font-bold text-slate-400 leading-none">
+                  Trust Score
+                </p>
+                <p className="text-sm font-bold text-green-600">
+                  {user.trustScore}
+                </p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-slate-400 hover:text-red-500 transition"
+              >
+                <LogOut size={20} />
+              </button>
+            </div>
           </>
         ) : (
           <Link
             to="/login"
-            className="text-sm font-semibold text-slate-600 hover:text-brand transition"
+            className="bg-brand text-white px-6 py-2 rounded-full font-bold text-sm hover:shadow-lg transition"
           >
             Sign In
           </Link>

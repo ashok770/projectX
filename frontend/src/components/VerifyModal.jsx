@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 const VerifyModal = ({ item, onClose }) => {
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState(null);
+  const { getProfile } = useContext(AuthContext);
 
   const handleVerify = async () => {
     try {
@@ -13,7 +15,8 @@ const VerifyModal = ({ item, onClose }) => {
         { itemId: item._id, answer },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setResult(res.data);
+    setResult(res.data);
+      getProfile();
     } catch (err) {
       alert("Wrong answer, bro. Be honest!");
     }

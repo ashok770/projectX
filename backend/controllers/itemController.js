@@ -1,4 +1,5 @@
 const Item = require("../models/Item");
+const User = require("../models/User");
 
 exports.createItem = async (req, res) => {
   try {
@@ -47,27 +48,32 @@ exports.getAllItems = async (req, res) => {
 exports.verifyClaim = async (req, res) => {
   try {
     const { itemId, answer } = req.body;
-
-    // We fetch the item and explicitly ask for the 'secretAnswer'
-    // because we set 'select: false' in the model earlier
     const item = await Item.findById(itemId).select("+secretAnswer");
 
     if (!item) return res.status(404).json({ message: "Item not found" });
 
-    // Simple string match (You can make this 'Fuzzy' later with AI)
     if (
       answer.toLowerCase().trim() === item.secretAnswer.toLowerCase().trim()
     ) {
-      // In a real app, you'd return the Finder's phone/email here
+      // 1. Reward the Finder (+10 points)
+      await User.findByIdAndUpdate(item.reportedBy, {
+        $inc: { trustScore: 10 },
+      });
+
+      // 2. Reward the Owner (+5 points)
+      await User.findByIdAndUpdate(req.user.id, { $inc: { trustScore: 5 } });
+
+      // 3. Mark item as resolved so it disappears from 'Active' feed
+      item.status = "resolved";
+      await item.save();
+
       res.json({
         success: true,
         message: "Verification Successful!",
         contact: "Contact Finder at: 9876543210",
       });
     } else {
-      res
-        .status(400)
-        .json({ success: false, message: "Incorrect answer. Try again!" });
+      res.status(400).json({ success: false, message: "Incorrect answer." });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, Camera } from "lucide-react"; // Import Camera icon
+import { AlertCircle, Camera, Package, MapPin } from "lucide-react";
 
 const ReportLost = () => {
   const [formData, setFormData] = useState({
@@ -10,18 +10,17 @@ const ReportLost = () => {
     location: "",
     description: "",
   });
-  const [image, setImage] = useState(null); // State for the image file
+  const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 1. Copy the handleUpload function (Update with YOUR real cloud name)
   const handleUpload = async () => {
     const data = new FormData();
     data.append("file", image);
     data.append("upload_preset", "campus_retrieve_preset");
 
     const res = await axios.post(
-      "https://api.cloudinary.com/v1_1/dtuocgtis/image/upload", // ✅ Make sure this is YOUR cloud name
+      "https://api.cloudinary.com/v1_1/dtuocgtis/image/upload",
       data,
     );
     return res.data.secure_url;
@@ -31,26 +30,23 @@ const ReportLost = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // 2. Modified handleSubmit to handle OPTIONAL image upload
       let imageUrl = "";
       if (image) {
-        // If an image was selected, upload it first
         imageUrl = await handleUpload();
       }
 
       const token = localStorage.getItem("token");
-      // 3. Send the report with the (potentially empty) imageUrl
       await axios.post(
         "http://localhost:5000/api/items/report",
-        { ...formData, type: "lost", image: imageUrl }, // ✅ Include image
+        { ...formData, type: "lost", image: imageUrl },
         { headers: { Authorization: `Bearer ${token}` } },
       );
 
-      alert("Lost report filed! We will look for matches.");
+      alert("Lost report filed! Searching for matches...");
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Error filing report. Check your console!");
+      alert("Error filing report. Check console.");
     } finally {
       setLoading(false);
     }
@@ -58,55 +54,106 @@ const ReportLost = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white mt-10 rounded-2xl shadow-sm border border-slate-100">
-      {/* Header (unchanged) */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
-          <AlertCircle size={24} />
+      <div className="flex items-center gap-3 mb-8 border-b border-slate-50 pb-6">
+        <div className="bg-blue-100 p-3 rounded-xl text-blue-600">
+          <AlertCircle size={28} />
         </div>
         <div>
           <h2 className="text-2xl font-bold text-dark">Report a Lost Item</h2>
           <p className="text-sm text-slate-500">
-            Provide details so we can match it.
+            Provide details so our AI can find a match.
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Name, Category, Location fields (unchanged) */}
-        {/* ... */}
-
-        {/* 4. The NEW Optional Image Field */}
-        <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-            <Camera size={16} className="text-blue-500" />
-            Upload Photo (Optional)
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Item Name */}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+            <Package size={16} className="text-blue-500" /> Item Name
           </label>
-          <p className="text-xs text-slate-500 mb-3">
-            An old photo of the item helps our AI match it faster.
-          </p>
-
           <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer"
+            type="text"
+            placeholder="e.g. Black Sony Headphones"
+            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+            onChange={(e) =>
+              setFormData({ ...formData, itemName: e.target.value })
+            }
+            required
           />
-
-          {image && (
-            <p className="text-xs text-green-600 mt-2 font-medium">
-              ✅ {image.name} selected.
-            </p>
-          )}
         </div>
 
-        {/* Description field (unchanged) */}
-        {/* ... */}
+        {/* Category */}
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Category
+          </label>
+          <select
+            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+            required
+          >
+            <option value="">Select Category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Documents">Documents/IDs</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Books">Books/Stationery</option>
+          </select>
+        </div>
+
+        {/* Location */}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+            <MapPin size={16} className="text-blue-500" /> Last Seen Location
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Block 3 Cafeteria"
+            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
+            onChange={(e) =>
+              setFormData({ ...formData, location: e.target.value })
+            }
+            required
+          />
+        </div>
+
+        {/* Optional Image Upload */}
+        <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-1">
+            <Camera size={16} className="text-blue-500" /> Reference Image
+            (Optional)
+          </label>
+          <p className="text-[11px] text-slate-500 mb-3 font-medium">
+            Have an old photo of the item? It helps us match better.
+          </p>
+          <input
+            type="file"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white file:font-bold hover:file:bg-blue-700 transition cursor-pointer"
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Specific Details
+          </label>
+          <textarea
+            placeholder="Color, brand, unique stickers, or marks..."
+            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition h-28"
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+          />
+        </div>
 
         <button
           disabled={loading}
-          className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition disabled:bg-slate-300"
+          className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all disabled:bg-slate-300"
         >
-          {loading ? "Filing Report..." : "Search for Matches"}
+          {loading ? "Uploading & Matching..." : "Find My Item"}
         </button>
       </form>
     </div>

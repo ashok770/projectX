@@ -10,6 +10,7 @@ exports.createItem = async (req, res) => {
       location,
       image,
       secretQuestion,
+      secretAnswer,
     } = req.body;
 
     const newItem = new Item({
@@ -20,7 +21,8 @@ exports.createItem = async (req, res) => {
       location,
       image,
       secretQuestion,
-      reportedBy: req.user.id, // Taken from our Auth Middleware!
+      secretAnswer,
+      reportedBy: req.user.id,
     });
 
     await newItem.save();

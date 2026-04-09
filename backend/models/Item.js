@@ -9,6 +9,7 @@ const itemSchema = new mongoose.Schema(
     location: { type: String, required: true },
     image: { type: String }, // This will be the Cloudinary URL
     secretQuestion: { type: String },
+    secretAnswer: { type: String, select: false },
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

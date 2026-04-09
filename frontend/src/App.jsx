@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import ReportFound from "./pages/ReportFound";
 import Dashboard from "./pages/Dashboard";
 import ReportLost from "./pages/ReportLost";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/report-found" element={<ReportFound />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/report-lost" element={<ReportLost />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </div>
   );

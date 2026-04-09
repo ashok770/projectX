@@ -33,11 +33,14 @@ export const AuthProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Update the local state with fresh data from DB
-      setUser(res.data);
-      localStorage.setItem("user", JSON.stringify(res.data));
+      // ✅ Use the spread operator {...res.data} to force a UI refresh
+      const updatedUser = { ...res.data };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      console.log("Profile Refreshed! New Score:", updatedUser.trustScore);
     } catch (err) {
-      console.error("Failed to refresh profile");
+      console.error("Failed to refresh profile", err);
     }
   };
 

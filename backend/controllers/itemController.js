@@ -123,3 +123,25 @@ exports.getUserItems = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getMatchesForUser = async (req, res) => {
+  try {
+    // 1. Get all lost items by this user
+    const myLostItems = await Item.find({
+      reportedBy: req.user.id,
+      type: "lost",
+      status: "active",
+    });
+
+    // 2. Find found items that match the category of my lost items
+    const categories = myLostItems.map((item) => item.category);
+    const potentialMatches = await Item.find({
+      type: "found",
+      category: { $in: categories },
+      status: "active",
+    }).populate("reportedBy", "name trustScore");
+
+    res.json(potentialMatches);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

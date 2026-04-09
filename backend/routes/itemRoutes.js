@@ -6,6 +6,7 @@ const {
   verifyClaim,
   getSmartMatches,
   getUserItems,
+  getMatchesForUser,
 } = require("../controllers/itemController");
 const auth = require("../middleware/auth");
 
@@ -14,5 +15,5 @@ router.get("/all", getAllItems); // Everyone can see the feed
 router.post("/verify-claim", auth, verifyClaim);
 router.get("/smart-matches", auth, getSmartMatches);
 router.get("/my-items", auth, getUserItems);
-
+router.get("/matches", auth, getMatchesForUser);
 module.exports = router;

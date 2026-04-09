@@ -17,11 +17,54 @@ const Home = () => {
 
   useEffect(() => {
     const fetchMatches = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const res = await axios.get(
+            "http://localhost:5000/api/items/matches",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          setMatches(res.data);
+        }
+      } catch (err) {
+        console.log("Match fetch failed");
+      }
+    };
+    fetchMatches();
+  }, []);
+
+  // Inside your return(), before the main "Campus Feed" heading:
+  {
+    matches.length > 0 && (
+      <div className="mb-10 bg-gradient-to-r from-orange-500 to-brand p-1 rounded-2xl shadow-lg">
+        <div className="bg-white p-6 rounded-[calc(1rem-1px)]">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+            </span>
+            <h2 className="text-xl font-bold text-dark">
+              Possible Matches Found!
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {matches.map((item) => (
+              <ItemCard key={item._id} item={item} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  useEffect(() => {
+    const fetchMatches = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         const res = await axios.get(
           "http://localhost:5000/api/items/smart-matches",
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         setMatches(res.data);
       }

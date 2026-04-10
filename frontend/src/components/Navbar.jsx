@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, PlusCircle, LayoutDashboard, LogOut } from "lucide-react";
+import { Search, PlusCircle, LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -48,6 +48,16 @@ const Navbar = () => {
               <LayoutDashboard size={18} />
               <span className="hidden sm:inline">My Dashboard</span>
             </Link>
+            <div className="h-8 w-px bg-slate-200 mx-2"></div>
+            {user && user.role === "admin" && (
+              <Link
+                to="/admin"
+                className="flex items-center gap-1 text-sm font-bold text-purple-600 hover:text-purple-700 transition px-3 py-1 bg-purple-50 rounded-lg border border-purple-100"
+              >
+                <ShieldCheck size={18} />
+                <span>Staff Panel</span>
+              </Link>
+            )}
             <div className="h-8 w-px bg-slate-200 mx-2"></div>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">

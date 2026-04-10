@@ -24,7 +24,8 @@ exports.completeHandover = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Handover complete. Database updated.",
+      message: "Handover Successful!",
+      itemName: item.itemName,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

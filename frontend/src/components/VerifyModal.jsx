@@ -58,12 +58,20 @@ const VerifyModal = ({ item, onClose }) => {
             </div>
           </>
         ) : (
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <p className="text-green-700 font-bold">✅ {result.message}</p>
-            <p className="text-slate-700 mt-2">{result.contact}</p>
+          <div className="bg-green-50 p-6 rounded-xl border border-green-200 text-center">
+            <p className="text-green-700 font-bold text-lg">✅ {result.message}</p>
+            <p className="text-slate-600 text-sm mt-2">
+              Please visit <span className="font-bold text-dark">{result.dropOffLocation}</span> and show this code to the staff:
+            </p>
+            <div className="my-4 bg-white border-2 border-dashed border-green-400 rounded-xl py-4">
+              <p className="text-5xl font-mono font-black tracking-[0.3em] text-green-600">
+                {result.claimCode}
+              </p>
+            </div>
+            <p className="text-xs text-slate-400">Show this code only to the staff. Do not share it.</p>
             <button
               onClick={onClose}
-              className="w-full mt-4 bg-dark text-white py-2 rounded-lg"
+              className="w-full mt-4 bg-dark text-white py-2 rounded-lg font-bold"
             >
               Close
             </button>

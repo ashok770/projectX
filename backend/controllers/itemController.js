@@ -55,26 +55,20 @@ exports.verifyClaim = async (req, res) => {
     if (!item) return res.status(404).json({ message: "Item not found" });
 
     if (answer.toLowerCase().trim() === item.secretAnswer.toLowerCase().trim()) {
-      // 1. Reward the Finder (+10 points)
-      await User.findByIdAndUpdate(item.reportedBy, { $inc: { trustScore: 10 } });
+      const claimCode = crypto.randomInt(100000, 999999).toString();
 
-      // 2. Reward the Owner (+5 points)
-      await User.findByIdAndUpdate(req.user.id, { $inc: { trustScore: 5 } });
-
-      // 3. Generate a unique 6-digit claim code
-      const code = crypto.randomInt(100000, 999999).toString();
-      item.claimCode = code;
       item.status = "pending-pickup";
+      item.claimCode = claimCode;
       await item.save();
 
       res.json({
         success: true,
         message: "Identity Verified!",
-        handoverInstructions: `Please visit ${item.dropOffLocation} and show this code to the staff:`,
-        claimCode: code,
+        claimCode: claimCode,
+        dropOffLocation: item.dropOffLocation || "College Office",
       });
     } else {
-      res.status(400).json({ success: false, message: "Incorrect answer." });
+      res.status(400).json({ message: "Wrong answer, try again!" });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });

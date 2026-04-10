@@ -17,8 +17,22 @@ const itemSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "matched", "resolved"],
+      enum: ["active", "matched", "resolved", "pending-pickup"],
       default: "active",
+    },
+    dropOffLocation: {
+      type: String,
+      required: true,
+      enum: ["Security Gate", "CSE Dept Office", "Library Desk", "Hostel Office"],
+    },
+    claimCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    isReceivedByStaff: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

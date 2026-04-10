@@ -1,6 +1,7 @@
 const Item = require("../models/Item");
 const User = require("../models/User");
 const { getSemanticMatch } = require("../utils/aiEngine");
+const crypto = require("crypto");
 
 exports.createItem = async (req, res) => {
   try {
@@ -53,25 +54,24 @@ exports.verifyClaim = async (req, res) => {
 
     if (!item) return res.status(404).json({ message: "Item not found" });
 
-    if (
-      answer.toLowerCase().trim() === item.secretAnswer.toLowerCase().trim()
-    ) {
+    if (answer.toLowerCase().trim() === item.secretAnswer.toLowerCase().trim()) {
       // 1. Reward the Finder (+10 points)
-      await User.findByIdAndUpdate(item.reportedBy, {
-        $inc: { trustScore: 10 },
-      });
+      await User.findByIdAndUpdate(item.reportedBy, { $inc: { trustScore: 10 } });
 
       // 2. Reward the Owner (+5 points)
       await User.findByIdAndUpdate(req.user.id, { $inc: { trustScore: 5 } });
 
-      // 3. Mark item as resolved so it disappears from 'Active' feed
-      item.status = "resolved";
+      // 3. Generate a unique 6-digit claim code
+      const code = crypto.randomInt(100000, 999999).toString();
+      item.claimCode = code;
+      item.status = "pending-pickup";
       await item.save();
 
       res.json({
         success: true,
-        message: "Verification Successful!",
-        contact: "Contact Finder at: 9876543210",
+        message: "Identity Verified!",
+        handoverInstructions: `Please visit ${item.dropOffLocation} and show this code to the staff:`,
+        claimCode: code,
       });
     } else {
       res.status(400).json({ success: false, message: "Incorrect answer." });

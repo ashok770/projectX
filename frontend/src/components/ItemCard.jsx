@@ -43,6 +43,15 @@ const ItemCard = ({ item }) => {
         <button onClick={() => setShowModal(true)} className="w-full mt-4 py-2 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">
           View Details
         </button>
+
+        {item.aiConfidence && (
+          <div className="mt-2 p-2 bg-purple-50 rounded-lg border border-purple-100">
+            <p className="text-[10px] uppercase font-bold text-purple-600 flex items-center gap-1">
+              ✨ Gemini AI Match: {item.aiConfidence}%
+            </p>
+            <p className="text-xs text-purple-800 italic">"{item.aiReason}"</p>
+          </div>
+        )}
       </div>
       {showModal && <VerifyModal item={item} onClose={() => setShowModal(false)} />}
     </div>

@@ -10,7 +10,7 @@ const ReportLost = () => {
     location: "",
     description: "",
   });
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(null); 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 

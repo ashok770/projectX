@@ -10,6 +10,8 @@ const ReportFound = () => {
     location: "",
     description: "",
     secretQuestion: "",
+    secretAnswer: "",
+    dropOffLocation: "",
   });
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -136,6 +138,27 @@ const ReportFound = () => {
               required
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-bold text-slate-700">
+            Physical Drop-off Point
+          </label>
+          <select
+            required
+            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand outline-none transition"
+            value={formData.dropOffLocation}
+            onChange={(e) => setFormData({ ...formData, dropOffLocation: e.target.value })}
+          >
+            <option value="">-- Where will you leave the item? --</option>
+            <option value="Security Gate">Main Security Gate</option>
+            <option value="CSE Dept Office">CSE Department Office (SF02)</option>
+            <option value="Library Front Desk">Library Front Desk</option>
+            <option value="Hostel Office">Hostel Warden Office</option>
+          </select>
+          <p className="text-[10px] text-slate-400 italic">
+            *This is where the owner will go to collect the item.
+          </p>
         </div>
 
         <button

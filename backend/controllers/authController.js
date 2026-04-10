@@ -68,6 +68,7 @@ exports.login = async (req, res) => {
         id: user._id,
         name: user.name,
         trustScore: user.trustScore,
+        role: user.role,
       },
     });
   } catch (err) {
@@ -81,7 +82,7 @@ exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ id: user._id, name: user.name, trustScore: user.trustScore });
+    res.json({ id: user._id, name: user.name, trustScore: user.trustScore, role: user.role });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

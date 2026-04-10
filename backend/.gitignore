@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# One-time scripts
+makeAdmin.js
+
 # Dependencies
 node_modules/
 

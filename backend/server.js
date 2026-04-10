@@ -14,6 +14,7 @@ app.use(cors());
 app.use(express.json()); // Lets us handle JSON data
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 // Basic Route for Testing
 app.get("/", (req, res) => {

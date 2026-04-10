@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
   }
 };
 
-exports.isAdmin = (req, res, next) => {
+const isAdmin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {
@@ -24,4 +24,4 @@ exports.isAdmin = (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = { auth, isAdmin };

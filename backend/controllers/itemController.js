@@ -1,5 +1,6 @@
 const Item = require("../models/Item");
 const User = require("../models/User");
+const { getSemanticMatch } = require("../utils/aiEngine");
 
 exports.createItem = async (req, res) => {
   try {
@@ -81,41 +82,28 @@ exports.verifyClaim = async (req, res) => {
 };
 exports.getSmartMatches = async (req, res) => {
   try {
-    // 1. Get all "Lost" items reported by the current user
-    const myLostItems = await Item.find({
-      reportedBy: req.user.id,
-      type: "lost",
-      status: "active",
-    });
+    const myLostItems = await Item.find({ reportedBy: req.user.id, type: "lost", status: "active" });
+    const allFoundItems = await Item.find({ type: "found", status: "active" });
 
-    let allSuggestions = [];
+    let aiSuggestions = [];
 
-    for (let lostItem of myLostItems) {
-      // 2. Find "Found" items in the same category
-      const potentialFoundItems = await Item.find({
-        type: "found",
-        category: lostItem.category,
-        status: "active",
-      });
+    for (let lost of myLostItems) {
+      for (let found of allFoundItems) {
+        if (lost.category === found.category) {
+          const matchResult = await getSemanticMatch(lost, found);
 
-      // 3. Score them
-      const scored = potentialFoundItems.map((found) => {
-        let score = 0;
-        if (found.location.toLowerCase() === lostItem.location.toLowerCase())
-          score += 40;
-        if (
-          found.itemName.toLowerCase().includes(lostItem.itemName.toLowerCase())
-        )
-          score += 60;
-
-        return { ...found._doc, matchScore: score };
-      });
-
-      // 4. Only keep items with a score > 40%
-      allSuggestions.push(...scored.filter((s) => s.matchScore > 40));
+          if (matchResult.score > 70) {
+            aiSuggestions.push({
+              ...found._doc,
+              aiConfidence: matchResult.score,
+              aiReason: matchResult.reason,
+            });
+          }
+        }
+      }
     }
 
-    res.json(allSuggestions);
+    res.json(aiSuggestions);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

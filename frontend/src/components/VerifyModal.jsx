@@ -12,7 +12,7 @@ const VerifyModal = ({ item, onClose }) => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/items/verify-claim",
+        "https://projectx-ojl3.onrender.com/api/items/verify-claim",
         { itemId: item._id, answer },
         { headers: { Authorization: `Bearer ${token}` } }
       );

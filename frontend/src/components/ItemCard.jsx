@@ -40,6 +40,13 @@ const ItemCard = ({ item }) => {
           <span>{new Date(item.createdAt).toLocaleDateString()}</span>
         </div>
 
+        {isFound && item.dropOffLocation && (
+          <div className="flex items-center gap-1 text-slate-500 text-xs mt-1">
+            <MapPin size={14} />
+            <span>Stored at: {item.dropOffLocation}</span>
+          </div>
+        )}
+
         <button onClick={() => setShowModal(true)} className="w-full mt-4 py-2 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">
           View Details
         </button>

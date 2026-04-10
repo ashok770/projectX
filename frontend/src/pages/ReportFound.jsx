@@ -39,7 +39,7 @@ const ReportFound = () => {
 
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/items/report",
+        "https://projectx-ojl3.onrender.com/api/items/report",
         { ...formData, type: "found", image: imageUrl },
         { headers: { Authorization: `Bearer ${token}` } },
       );

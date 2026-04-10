@@ -11,7 +11,7 @@ const AdminPanel = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/admin/complete-handover",
+        "https://projectx-ojl3.onrender.com/api/admin/complete-handover",
         { claimCode: code },
         { headers: { Authorization: `Bearer ${token}` } },
       );

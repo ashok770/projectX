@@ -10,7 +10,13 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL // Add your Vercel URL in .env
+  ],
+  credentials: true
+}));
 app.use(express.json()); // Lets us handle JSON data
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);

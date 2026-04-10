@@ -11,7 +11,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchMyItems = async () => {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/items/my-items", {
+      const res = await axios.get("https://projectx-ojl3.onrender.com/api/items/my-items", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMyItems(res.data);
@@ -23,7 +23,7 @@ const Dashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/api/items/${editingItem._id}`, editingItem, {
+      await axios.put(`https://projectx-ojl3.onrender.com/api/items/${editingItem._id}`, editingItem, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMyItems(myItems.map((item) => item._id === editingItem._id ? editingItem : item));
@@ -38,7 +38,7 @@ const Dashboard = () => {
     if (window.confirm("Are you sure you want to remove this report?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/items/${itemId}`, {
+        await axios.delete(`https://projectx-ojl3.onrender.com/api/items/${itemId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMyItems(myItems.filter((item) => item._id !== itemId));

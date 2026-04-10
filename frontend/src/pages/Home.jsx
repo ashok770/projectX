@@ -11,7 +11,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const res = await axios.get("http://localhost:5000/api/items/all");
+      const res = await axios.get("https://projectx-ojl3.onrender.com/api/items/all");
       setItems(res.data);
     };
     fetchItems();
@@ -23,7 +23,7 @@ const Home = () => {
         const token = localStorage.getItem("token");
         if (token) {
           const res = await axios.get(
-            "http://localhost:5000/api/items/matches",
+            "https://projectx-ojl3.onrender.com/api/items/matches",
             { headers: { Authorization: `Bearer ${token}` } }
           );
           setMatches(res.data);

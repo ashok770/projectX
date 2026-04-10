@@ -167,3 +167,18 @@ exports.deleteItem = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.updateItem = async (req, res) => {
+  try {
+    let item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+
+    if (item.reportedBy.toString() !== req.user.id)
+      return res.status(401).json({ message: "Unauthorized" });
+
+    item = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

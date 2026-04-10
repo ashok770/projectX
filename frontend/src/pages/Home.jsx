@@ -87,16 +87,6 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search by item name or location..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-3 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand"
-        />
-      </div>
-
       {matches.length > 0 && (
         <div className="mb-12 p-6 bg-orange-50 rounded-2xl border border-orange-200">
           <h2 className="text-xl font-bold text-orange-800 flex items-center gap-2">

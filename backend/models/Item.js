@@ -22,7 +22,7 @@ const itemSchema = new mongoose.Schema(
     },
     dropOffLocation: {
       type: String,
-      required: true,
+      required: false,
       enum: ["Security Gate", "CSE Dept Office", "Library Desk", "Library Front Desk", "Hostel Office"],
     },
     claimCode: {

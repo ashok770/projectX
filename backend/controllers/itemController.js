@@ -53,6 +53,7 @@ exports.verifyClaim = async (req, res) => {
     const item = await Item.findById(itemId).select("+secretAnswer");
 
     if (!item) return res.status(404).json({ message: "Item not found" });
+    if (!item.secretAnswer) return res.status(400).json({ message: "This item has no secret answer set." });
 
     if (answer.toLowerCase().trim() === item.secretAnswer.toLowerCase().trim()) {
       const claimCode = crypto.randomInt(100000, 999999).toString();
@@ -71,6 +72,7 @@ exports.verifyClaim = async (req, res) => {
       res.status(400).json({ message: "Wrong answer, try again!" });
     }
   } catch (err) {
+    console.error("verifyClaim error:", err.message);
     res.status(500).json({ error: err.message });
   }
 };

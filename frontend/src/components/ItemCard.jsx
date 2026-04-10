@@ -7,7 +7,7 @@ const ItemCard = ({ item }) => {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
       <div className="relative h-48 w-full bg-slate-200">
         {item.image ? (
           <img

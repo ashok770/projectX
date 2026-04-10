@@ -1,7 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
-import { Package, CheckCircle, Clock } from "lucide-react";
+import { Package, CheckCircle, Clock, Coffee } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const [myItems, setMyItems] = useState([]);
@@ -71,8 +72,27 @@ const Dashboard = () => {
         <Package className="text-brand" /> Your Reported Items
       </h3>
 
-      <div className="space-y-4">
-        {myItems.map((item) => (
+      {myItems.length === 0 ? (
+        <div className="mt-12 text-center p-12 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+          <div className="bg-slate-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Coffee className="text-slate-300" size={32} />
+          </div>
+          <h3 className="text-xl font-black text-dark">Your list is empty</h3>
+          <p className="text-slate-500 mt-2 mb-8 max-w-sm mx-auto">
+            You haven't reported any lost or found items yet. Help the community by reporting what you've found!
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link to="/report-found" className="bg-brand text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition">
+              Report Found Item
+            </Link>
+            <Link to="/report-lost" className="border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition">
+              Report Lost Item
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {myItems.map((item) => (
           <div
             key={item._id}
             className="bg-white p-5 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm"
@@ -120,7 +140,8 @@ const Dashboard = () => {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
 
       {editingItem && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">

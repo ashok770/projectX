@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ItemCard from "../components/ItemCard";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
 
 const Home = () => {
   const [items, setItems] = useState([]);
@@ -87,18 +87,31 @@ const Home = () => {
         </div>
       </div>
 
-      {matches.length > 0 && (
-        <div className="mb-12 p-6 bg-orange-50 rounded-2xl border border-orange-200">
-          <h2 className="text-xl font-bold text-orange-800 flex items-center gap-2">
-            <span>✨ Smart Matches for You</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-8 mb-12">
+        <div className="flex items-center gap-2 mb-6">
+          <Sparkles className="text-brand animate-pulse" size={20} />
+          <h2 className="text-xl font-bold text-dark">Smart Matches for You</h2>
+        </div>
+        {matches.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {matches.map((item) => (
               <ItemCard key={item._id} item={item} isMatch={true} />
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="bg-white p-6 rounded-full shadow-inner mb-4 relative">
+              <Search className="text-slate-300 animate-bounce" size={40} />
+              <div className="absolute -top-1 -right-1 bg-brand w-4 h-4 rounded-full border-2 border-white"></div>
+            </div>
+            <h3 className="text-lg font-bold text-slate-700">No matches... yet!</h3>
+            <p className="text-sm text-slate-500 max-w-xs mx-auto mt-2 leading-relaxed">
+              Our AI is scanning every new report at <b>Sri Eshwar College</b>.
+              Grab a coffee, we'll notify you the moment a match is found!
+            </p>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredItems.map((item) => (

@@ -26,10 +26,10 @@ const VerifyModal = ({ item, onClose }) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white p-8 rounded-2xl max-w-md w-full shadow-2xl">
         <h2 className="text-xl font-bold text-dark mb-4">Verify Ownership</h2>
-        <p className="text-slate-600 mb-6">
-          The finder asked: <br />
-          <span className="font-bold text-orange-600">
-            "{item.secretQuestion}"
+        <p className="text-slate-600 mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
+          <span className="text-xs uppercase font-bold text-slate-400 block mb-1">Question from the Finder:</span>
+          <span className="font-bold text-orange-600 text-lg italic">
+            "{item.secretQuestion || "No question provided by finder."}"
           </span>
         </p>
 

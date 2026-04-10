@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ItemCard from "../components/ItemCard";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 const Home = () => {
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState("all");
   const [matches, setMatches] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -22,9 +24,7 @@ const Home = () => {
         if (token) {
           const res = await axios.get(
             "http://localhost:5000/api/items/matches",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           setMatches(res.data);
         }
@@ -35,48 +35,37 @@ const Home = () => {
     fetchMatches();
   }, []);
 
-  // Inside your return(), before the main "Campus Feed" heading:
-  {
-    matches.length > 0 && (
-      <div className="mb-10 bg-gradient-to-r from-orange-500 to-brand p-1 rounded-2xl shadow-lg">
-        <div className="bg-white p-6 rounded-[calc(1rem-1px)]">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
-            </span>
-            <h2 className="text-xl font-bold text-dark">
-              Possible Matches Found!
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {matches.map((item) => (
-              <ItemCard key={item._id} item={item} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-  useEffect(() => {
-    const fetchMatches = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const res = await axios.get(
-          "http://localhost:5000/api/items/smart-matches",
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        setMatches(res.data);
-      }
-    };
-    fetchMatches();
-  }, []);
-
-  const filteredItems =
-    filter === "all" ? items : items.filter((i) => i.type === filter);
+  const filteredItems = items.filter((item) => {
+    const matchesFilter = filter === "all" || item.type === filter;
+    const matchesSearch =
+      item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.location.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-10">
+      <div className="relative max-w-xl mx-auto mb-12">
+        <div className="relative flex items-center">
+          <Search className="absolute left-4 text-slate-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search for items (e.g. 'iPhone', 'Library', 'Watch')..."
+            className="w-full pl-12 pr-12 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all text-slate-600"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <div className="absolute right-4 text-slate-300">
+            <SlidersHorizontal size={18} />
+          </div>
+        </div>
+        {searchQuery && (
+          <p className="text-xs text-slate-400 mt-2 ml-2">
+            Showing results for "<span className="text-brand font-medium">{searchQuery}</span>"
+          </p>
+        )}
+      </div>
+
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-bold text-dark">Campus Feed</h2>
@@ -96,6 +85,16 @@ const Home = () => {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search by item name or location..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-3 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand"
+        />
       </div>
 
       {matches.length > 0 && (

@@ -13,10 +13,14 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    process.env.FRONTEND_URL // Add your Vercel URL in .env
-  ],
-  credentials: true
+    "https://project-x-six-iota.vercel.app",
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+app.options("*", cors());
 app.use(express.json()); // Lets us handle JSON data
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);

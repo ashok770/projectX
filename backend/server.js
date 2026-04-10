@@ -22,7 +22,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("(.*)", cors(corsOptions));
 app.use(express.json()); // Lets us handle JSON data
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemRoutes);

@@ -1,28 +1,28 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, Camera, Package, MapPin } from "lucide-react";
+import { AlertCircle, Camera, Package, MapPin, FileText, Loader, Search, Upload } from "lucide-react";
+
+const inputClass = "w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-sm text-slate-700";
 
 const ReportLost = () => {
-  const [formData, setFormData] = useState({
-    itemName: "",
-    category: "",
-    location: "",
-    description: "",
-  });
-  const [image, setImage] = useState(null); 
+  const [formData, setFormData] = useState({ itemName: "", category: "", location: "", description: "" });
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    if (file) setPreview(URL.createObjectURL(file));
+  };
 
   const handleUpload = async () => {
     const data = new FormData();
     data.append("file", image);
     data.append("upload_preset", "campus_retrieve_preset");
-
-    const res = await axios.post(
-      "https://api.cloudinary.com/v1_1/dtuocgtis/image/upload",
-      data,
-    );
+    const res = await axios.post("https://api.cloudinary.com/v1_1/dtuocgtis/image/upload", data);
     return res.data.secure_url;
   };
 
@@ -30,132 +30,134 @@ const ReportLost = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      let imageUrl = "";
-      if (image) {
-        imageUrl = await handleUpload();
-      }
-
+      const imageUrl = image ? await handleUpload() : "";
       const token = localStorage.getItem("token");
       await axios.post(
         "https://projectx-ojl3.onrender.com/api/items/report",
         { ...formData, type: "lost", image: imageUrl },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      alert("Lost report filed! Searching for matches...");
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Error filing report. Check console.");
     } finally {
       setLoading(false);
     }
   };
 
+  const set = (key) => (e) => setFormData({ ...formData, [key]: e.target.value });
+
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white mt-10 rounded-2xl shadow-sm border border-slate-100">
-      <div className="flex items-center gap-3 mb-8 border-b border-slate-50 pb-6">
-        <div className="bg-blue-100 p-3 rounded-xl text-blue-600">
-          <AlertCircle size={28} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-dark">Report a Lost Item</h2>
-          <p className="text-sm text-slate-500">
-            Provide details so our AI can find a match.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-slate-50 animate-fade-in">
+
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+        <div className="max-w-2xl mx-auto px-6 py-10">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+              <AlertCircle size={28} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black">Report a Lost Item</h1>
+              <p className="text-blue-100 text-sm mt-0.5">Our AI will scan all found reports for a match</p>
+            </div>
+          </div>
+
+          {/* AI Badge */}
+          <div className="mt-6 inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-2xl px-4 py-3">
+            <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
+              <Search size={16} className="animate-pulse" />
+            </div>
+            <div>
+              <p className="text-xs font-black">Gemini AI is on standby</p>
+              <p className="text-[10px] text-blue-200">Will instantly match your report with found items</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Item Name */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-            <Package size={16} className="text-blue-500" /> Item Name
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Black Sony Headphones"
-            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
-            onChange={(e) =>
-              setFormData({ ...formData, itemName: e.target.value })
-            }
-            required
-          />
-        </div>
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* Category */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
-            Category
-          </label>
-          <select
-            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-            required
+          {/* Item Details */}
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+              <div className="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Package className="text-blue-500" size={16} />
+              </div>
+              <h2 className="font-black text-slate-800">What did you lose?</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Item Name *</label>
+                <input type="text" placeholder="e.g. Black Sony Headphones, Student ID" className={inputClass} onChange={set("itemName")} required />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Category *</label>
+                <select className={inputClass} onChange={set("category")} required defaultValue="">
+                  <option value="" disabled>Select a category</option>
+                  <option value="Electronics">📱 Electronics</option>
+                  <option value="Documents">📄 Documents / IDs</option>
+                  <option value="Accessories">🔑 Accessories (Keys/Wallets)</option>
+                  <option value="Books">📚 Books / Stationery</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                  <span className="flex items-center gap-1"><MapPin size={12} /> Last Seen Location *</span>
+                </label>
+                <input type="text" placeholder="e.g. Block 3 Cafeteria, Library 2nd Floor" className={inputClass} onChange={set("location")} required />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                  <span className="flex items-center gap-1"><FileText size={12} /> Specific Details</span>
+                </label>
+                <textarea placeholder="Color, brand, unique stickers, scratches, or any identifying marks..." className={`${inputClass} h-28 resize-none`} onChange={set("description")} />
+              </div>
+            </div>
+          </div>
+
+          {/* Image Upload */}
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+              <div className="w-8 h-8 bg-purple-100 rounded-xl flex items-center justify-center">
+                <Camera className="text-purple-500" size={16} />
+              </div>
+              <div>
+                <h2 className="font-black text-slate-800">Reference Photo <span className="text-slate-400 font-medium text-sm">(optional)</span></h2>
+                <p className="text-xs text-slate-400">Helps AI match better</p>
+              </div>
+            </div>
+            <div className="p-6">
+              {preview ? (
+                <div className="relative">
+                  <img src={preview} alt="preview" className="w-full h-48 object-cover rounded-2xl" />
+                  <button type="button" onClick={() => { setImage(null); setPreview(null); }}
+                    className="absolute top-3 right-3 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/70 transition text-xs font-bold">✕</button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center h-36 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/50 transition-all group">
+                  <Upload className="text-slate-300 group-hover:text-blue-400 transition mb-2" size={28} />
+                  <p className="text-sm font-semibold text-slate-400 group-hover:text-blue-500 transition">Click to upload a photo</p>
+                  <p className="text-xs text-slate-300 mt-1">PNG, JPG up to 10MB</p>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                </label>
+              )}
+            </div>
+          </div>
+
+          <button
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black py-4 rounded-2xl hover:from-blue-700 hover:to-blue-800 disabled:from-slate-300 disabled:to-slate-300 transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-3 text-base"
           >
-            <option value="">Select Category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Documents">Documents/IDs</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Books">Books/Stationery</option>
-          </select>
-        </div>
-
-        {/* Location */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-            <MapPin size={16} className="text-blue-500" /> Last Seen Location
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Block 3 Cafeteria"
-            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition"
-            onChange={(e) =>
-              setFormData({ ...formData, location: e.target.value })
-            }
-            required
-          />
-        </div>
-
-        {/* Optional Image Upload */}
-        <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-1">
-            <Camera size={16} className="text-blue-500" /> Reference Image
-            (Optional)
-          </label>
-          <p className="text-[11px] text-slate-500 mb-3 font-medium">
-            Have an old photo of the item? It helps us match better.
-          </p>
-          <input
-            type="file"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white file:font-bold hover:file:bg-blue-700 transition cursor-pointer"
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
-            Specific Details
-          </label>
-          <textarea
-            placeholder="Color, brand, unique stickers, or marks..."
-            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition h-28"
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-          />
-        </div>
-
-        <button
-          disabled={loading}
-          className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all disabled:bg-slate-300"
-        >
-          {loading ? "Uploading & Matching..." : "Find My Item"}
-        </button>
-      </form>
+            {loading ? (
+              <><Loader className="animate-spin" size={20} /> Searching for matches...</>
+            ) : (
+              <><Search size={20} /> Find My Item</>
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

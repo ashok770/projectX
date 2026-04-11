@@ -35,12 +35,12 @@ export const AuthProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // ✅ Use the spread operator {...res.data} to force a UI refresh
-      const updatedUser = { ...res.data };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      console.log("Profile Refreshed! New Score:", updatedUser.trustScore);
+      // Only update trustScore and role — avoids full re-render blink
+      setUser((prev) => {
+        const updated = { ...prev, trustScore: res.data.trustScore, role: res.data.role };
+        localStorage.setItem("user", JSON.stringify(updated));
+        return updated;
+      });
     } catch (err) {
       console.error("Failed to refresh profile", err);
     }

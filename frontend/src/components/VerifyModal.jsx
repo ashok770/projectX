@@ -19,8 +19,7 @@ const VerifyModal = ({ item, onClose }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setResult(res.data);
-      // Refresh trust score silently in background after result is shown
-      setTimeout(() => getProfile(), 500);
+      getProfile();
     } catch (err) {
       alert(err.response?.data?.message || err.response?.data?.error || "Something went wrong!");
     } finally {

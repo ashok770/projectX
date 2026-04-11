@@ -6,9 +6,11 @@ import { Check } from "lucide-react";
 const VerifyModal = ({ item, onClose }) => {
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { getProfile } = useContext(AuthContext);
 
   const handleVerify = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
@@ -17,9 +19,12 @@ const VerifyModal = ({ item, onClose }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setResult(res.data);
-      getProfile();
+      // Refresh trust score silently in background after result is shown
+      setTimeout(() => getProfile(), 500);
     } catch (err) {
       alert(err.response?.data?.message || err.response?.data?.error || "Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,9 +93,12 @@ const VerifyModal = ({ item, onClose }) => {
               </button>
               <button
                 onClick={handleVerify}
-                className="flex-1 bg-brand text-white py-2 rounded-lg font-bold"
+                disabled={loading || !answer.trim()}
+                className="flex-1 bg-brand text-white py-2 rounded-lg font-bold disabled:bg-slate-300 flex items-center justify-center gap-2 transition"
               >
-                Verify
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : "Verify"}
               </button>
             </div>
           </>

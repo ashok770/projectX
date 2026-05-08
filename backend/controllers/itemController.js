@@ -2,7 +2,6 @@ const Item = require("../models/Item");
 const User = require("../models/User");
 const { getSemanticMatch } = require("../utils/aiEngine");
 const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
 
 exports.createItem = async (req, res) => {
   try {
@@ -25,7 +24,7 @@ exports.createItem = async (req, res) => {
       location,
       image,
       secretQuestion,
-      secretAnswer: secretAnswer ? await bcrypt.hash(secretAnswer.toLowerCase().trim(), 10) : undefined,
+      secretAnswer: secretAnswer ? secretAnswer.toLowerCase().trim() : undefined,
       reportedBy: req.user.id,
     });
 
@@ -51,43 +50,27 @@ exports.getAllItems = async (req, res) => {
 exports.verifyClaim = async (req, res) => {
   try {
     const { itemId, answer } = req.body;
-    const item = await Item.findById(itemId).select("+secretAnswer +claimAttempts +claimLockedUntil");
+    const item = await Item.findById(itemId).select("+secretAnswer");
 
     if (!item) return res.status(404).json({ message: "Item not found" });
     if (!item.secretAnswer) return res.status(400).json({ message: "This item has no secret answer set." });
 
-    // Brute-force lock check
-    if (item.claimLockedUntil && item.claimLockedUntil > Date.now()) {
-      const mins = Math.ceil((item.claimLockedUntil - Date.now()) / 60000);
-      return res.status(429).json({ message: `Too many attempts. Try again in ${mins} minute(s).` });
-    }
-
-    const isMatch = await bcrypt.compare(answer.toLowerCase().trim(), item.secretAnswer);
+    const isMatch = answer.toLowerCase().trim() === item.secretAnswer.toLowerCase().trim();
 
     if (isMatch) {
-      const rawCode = crypto.randomInt(100000, 999999).toString();
-      const hashedCode = await bcrypt.hash(rawCode, 10);
+      const claimCode = crypto.randomInt(100000, 999999).toString();
 
       item.status = "pending-pickup";
-      item.claimCode = hashedCode;
-      item.claimCodeExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h expiry
-      item.claimAttempts = 0;
-      item.claimLockedUntil = null;
+      item.claimCode = claimCode;
       await item.save();
 
       res.json({
         success: true,
         message: "Identity Verified!",
-        claimCode: rawCode,
+        claimCode,
         dropOffLocation: item.dropOffLocation || "College Office",
       });
     } else {
-      item.claimAttempts = (item.claimAttempts || 0) + 1;
-      if (item.claimAttempts >= 5) {
-        item.claimLockedUntil = new Date(Date.now() + 15 * 60 * 1000); // lock 15 mins
-        item.claimAttempts = 0;
-      }
-      await item.save();
       res.status(400).json({ message: "Wrong answer, try again!" });
     }
   } catch (err) {

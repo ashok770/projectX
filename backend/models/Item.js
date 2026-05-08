@@ -10,6 +10,8 @@ const itemSchema = new mongoose.Schema(
     image: { type: String }, // This will be the Cloudinary URL
     secretQuestion: { type: String },
     secretAnswer: { type: String, select: false },
+    claimAttempts: { type: Number, default: 0 },
+    claimLockedUntil: { type: Date, default: null },
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -25,11 +27,8 @@ const itemSchema = new mongoose.Schema(
       required: false,
       enum: ["Security Gate", "CSE Dept Office", "Library Desk", "Library Front Desk", "Hostel Office"],
     },
-    claimCode: {
-      type: String,
-      unique: true,
-      sparse: true,
-    },
+    claimCode: { type: String, unique: true, sparse: true, select: false },
+    claimCodeExpiry: { type: Date, default: null },
     isReceivedByStaff: {
       type: Boolean,
       default: false,
